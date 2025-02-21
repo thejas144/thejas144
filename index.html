@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Messages</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #ff416c, #ff4b2b);
+            font-family: Arial, sans-serif;
+            text-align: center;
+            color: white;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+        }
+        .profile {
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 20px;
+            padding: 10px;
+            color: black;
+        }
+        .profile img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        textarea {
+            width: 100%;
+            height: 80px;
+            border-radius: 10px;
+            border: none;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .send-btn {
+            background: black;
+            color: white;
+        }
+        .get-messages-btn {
+            background: black;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="profile">
+            <img id="profile-pic" src="profile.JPG" alt="Profile">
+            <div>
+                <strong id="username">@username</strong>
+                <p>send me anonymous messages!</p>
+            </div>
+        </div>
+        <textarea id="message" placeholder="Send me anonymous messages..."></textarea>
+        <button class="send-btn" onclick="sendMessage()">Send!</button>
+        <p>🔽 229 people just tapped the button 🔽</p>
+        <button class="get-messages-btn">Get your own messages!</button>
+        <p>Terms | Privacy</p>
+    </div><script>
+    const supabaseUrl = 'https://wxcvlnrvdiikjqjscgcl.supabase.co';
+    const supabaseKey = process.env.SUPABASE_KEY;
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+    function getUsernameFromURL() {
+        const urlParams = new URLSearchParams(window.location.pathname);
+        return urlParams.get("user") || "unknown";
+    }
+    
+    document.getElementById("username").innerText = "@" + getUsernameFromURL();
+    
+    async function sendMessage() {
+        const message = document.getElementById("message").value;
+        const username = getUsernameFromURL();
+        
+        if (!message) {
+            alert("Please enter a message!");
+            return;
+        }
+        
+        const { data, error } = await supabase.from("messages").insert([
+            { username, message }
+        ]);
+        
+        if (error) {
+            alert("Error sending message!");
+            console.log(error);
+        } else {
+            alert("Message sent successfully!");
+            document.getElementById("message").value = "";
+        }
+    }
+</script>
+
+</body>
+</html>
